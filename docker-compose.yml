@@ -1,0 +1,71 @@
+version: '2'
+
+networks:
+  monitoring:
+    driver: bridge
+
+
+services:
+
+  grafana:
+    image: monitoringartist/grafana-xxl
+    restart: always
+    container_name: grafana
+    networks:
+      - monitoring
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+    links:
+      - prometheus:prometheus
+    volumes:
+      - "/home/docker/monitoring/grafana:/var/lib/grafana"
+    environment:
+      - "GF_SECURITY_ADMIN_PASSWORD=secret"
+
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    container_name: prometheus
+    networks:
+      - monitoring
+    expose:
+      - 9090
+    ports:
+      - "9090:9090"
+    links:
+      - nodexporter:nodexporter
+      - cadvisor:cadvisor
+    volumes:
+      - "/home/docker/monitoring/prometheus/config:/etc/prometheus:rw"
+      - "/home/docker/monitoring/prometheus/data:/prometheus:rw"
+
+  nodexporter:
+    image: prom/node-exporter
+    restart: always
+    container_name: nodexporter
+    networks:
+      - monitoring
+    expose:
+      - 9100
+    ports:
+      - "9100:9100"
+
+  cadvisor:
+    image: google/cadvisor
+    restart: always
+    container_name: cadvisor
+    networks:
+      - monitoring
+    expose:
+      - 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:rw"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+	
+

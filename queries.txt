@@ -1,0 +1,34 @@
+Uptime: sum(time() - sum(node_boot_time_seconds))
+Filesystem usage : min((node_filesystem_files - node_filesystem_files_free )/ node_filesystem_files)
+Nmb container: count(rate(container_last_seen{name=~".+"}[$interval]))
+Memory: min((node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * 100
+Swap: sum(node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes)	
+Load: sum(node_load15)
+Used disk space: node_filesystem_size_bytes - node_filesystem_free_bytes
+Avaible memory: node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes
+Disk I/O: 
+- - sum(rate(node_disk_read_bytes_total[$interval])) by (device)
+- sum(rate(node_disk_written_bytes_total[$interval])) by (device)
+Network:
+- sum(rate(container_network_receive_bytes_total{id="/"}[$interval])) by (id)
+- - sum(rate(container_network_transmit_bytes_total{id="/"}[$interval])) by (id)
+CPU Usage: sum(rate(process_cpu_seconds_total[$interval])) * 100
+Memory swap per container:
+- sum(container_memory_swap{name=~".+"}) by (name)
+- container_memory_usage_bytes{name=~".+"}
+Received network per container:
+- sum(rate(container_network_receive_bytes_total{name=~".+"}[$interval])) by (name)
+- - rate(container_network_transmit_bytes_total{name=~".+"}[$interval])
+Transmited network per container:
+- sum(rate(container_network_transmit_bytes_total{name=~".+"}[$interval])) by (name)
+- rate(container_network_transmit_bytes_total{id="/"}[$interval])
+CPU Usage per container : sum(rate(container_cpu_usage_seconds_total{name=~".+"}[$interval])) by (name) * 100
+Memory Usage per container:
+- sum(container_memory_rss{name=~".+"}) by (name)
+- container_memory_usage_bytes{name=~".+"}
+Memory:
+- node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes
+- node_memory_Buffers_bytes
+- node_memory_Cached_bytes
+- node_memory_MemFree_bytes
+Temperature: node_hwmon_temp_celsius
