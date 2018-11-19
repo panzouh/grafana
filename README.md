@@ -2,9 +2,13 @@
 ## Run
 
 >mkdir /home/docker/monitoring
+
 >git clone https://github.com/13paulmurith/grafana.git
+
 >docker-compose up -d && docker-compose stop
+
 >mv prometheus.yml prometheus/
+
 >docker-compose rm && docker-compose up -d
 
 ## Connect to Grafana UI : 
